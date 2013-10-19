@@ -2,6 +2,8 @@ silex-conneg-provider
 =====================
 
 [![Build Status](https://travis-ci.org/jdesrosiers/silex-conneg-provider.png?branch=master)](https://travis-ci.org/jdesrosiers/silex-conneg-provider)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/badges/quality-score.png?s=3b40bf693eeed775332adc6dce0a0d5d6d22562b)](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/)
+[![Code Coverage](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/badges/coverage.png?s=236af0823e81210b6d6f75ccb2952df1a45f7fa4)](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/)
 
 A [silex](https://github.com/fabpot/Silex) service provider that provides tools for doing HTTP content negotiation
 using [jms/serializer](https://github.com/schmittjoh/serializer).

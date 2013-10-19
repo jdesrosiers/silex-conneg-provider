@@ -2,37 +2,30 @@
 
 namespace JDesrosiers\Silex;
 
-use JMS\Serializer\Serializer;
-use Symfony\Component\HttpFoundation\Request;
+use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 
 class ContentNegotiation
 {
-    protected $request;
-    protected $serializer;
-    protected $serializationFormats;
-    protected $deserializationFormats;
+    protected $app;
 
-    public function __construct(Request $request, Serializer $serializer, $serializationFormats, $deserializationFormats)
+    public function __construct(Application $app)
     {
-        $this->request = $request;
-        $this->serializer = $serializer;
-        $this->serializationFormats = $serializationFormats;
-        $this->deserializationFormats = $deserializationFormats;
+        $this->app = $app;
     }
 
     public function createResponse($responseObject, $status = 200, array $headers = array())
     {
-        $format = $this->request->getRequestFormat();
+        $format = $this->app["request"]->getRequestFormat();
 
         // Just in case
-        if (!in_array($format, $this->serializationFormats)) {
+        if (!in_array($format, $this->app["conneg.serializationFormats"])) {
             throw new NotAcceptableHttpException();
         }
 
-        $serializedContent = $this->serializer->serialize($responseObject, $format);
+        $serializedContent = $this->app["serializer"]->serialize($responseObject, $format);
 
         // Set validation cache headers
         $response = new Response($serializedContent, $status, $headers);
@@ -44,9 +37,9 @@ class ContentNegotiation
 
     public function deserializeRequest($class)
     {
-        $format = $this->request->getContentType();
-        if (in_array($format, $this->deserializationFormats)) {
-            return $this->serializer->deserialize($this->request->getContent(), $class, $format);
+        $format = $this->app["request"]->getContentType();
+        if (in_array($format, $this->app["conneg.deserializationFormats"])) {
+            return $this->app["conneg.serializer"]->deserialize($this->app["request"]->getContent(), $class, $format);
         } else {
             throw new UnsupportedMediaTypeHttpException();
         }
