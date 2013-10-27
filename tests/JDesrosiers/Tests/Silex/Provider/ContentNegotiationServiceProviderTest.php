@@ -4,9 +4,6 @@ namespace JDesrosiers\Tests\Silex\Provider;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use JDesrosiers\Silex\Provider\ContentNegotiationServiceProvider;
-use JMS\Serializer\Naming\IdenticalPropertyNamingStrategy;
-use JMS\Serializer\Naming\SerializedNameAnnotationStrategy;
-use JMS\Serializer\SerializerBuilder;
 use Silex\Application;
 use Symfony\Component\HttpKernel\Client;
 
@@ -21,16 +18,12 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->app = new Application();
-
-        $serializerBuilder = SerializerBuilder::create()
-                ->setCacheDir(__DIR__ . "/../cache")
-                ->setPropertyNamingStrategy(new SerializedNameAnnotationStrategy(new IdenticalPropertyNamingStrategy()));
+        $this->app["debug"] = true;
 
         $this->app->register(new ContentNegotiationServiceProvider(), array(
-             "conneg.serializer" => $serializerBuilder->build(),
-             "conneg.serializationFormats" => array("json", "xml", "yml"),
-             "conneg.deserializationFormats" => array("json", "xml"),
-             "conneg.defaultContentType" => "json",
+             "conneg.responseFormats" => array("json", "xml"),
+             "conneg.requestFormats" => array("json", "xml"),
+             "conneg.defaultFormat" => "json",
         ));
     }
 
@@ -63,8 +56,6 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
         $response = $client->getResponse();
 
         $this->assertEquals("406", $response->getStatusCode());
-        $this->assertEquals("", $response->getContent());
-//        $this->assertFalse($response->headers->has("Content-Type"));
     }
 
     public function dataProviderUnsupportedMediaTypeReturns415()
@@ -83,12 +74,12 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
     {
         $app = $this->app;
         $this->app->post("/foo", function () use ($app) {
-            $app["conneg"]->deserializeRequest("array");
+            return "";
         });
 
         $headers = array(
             "HTTP_ACCEPT" => $accept,
-            "CONTENT_TYPE" => $contentType,
+            "HTTP_CONTENT_TYPE" => $contentType,
         );
 
         $client = new Client($this->app, $headers);
