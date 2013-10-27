@@ -2,14 +2,11 @@
 
 namespace JDesrosiers\Tests\Silex\Provider;
 
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use JDesrosiers\Silex\Provider\ContentNegotiationServiceProvider;
 use Silex\Application;
 use Symfony\Component\HttpKernel\Client;
 
 require_once __DIR__ . "/../../../../../vendor/autoload.php";
-
-AnnotationRegistry::registerAutoloadNamespace("JMS\Serializer\Annotation", __DIR__ . "/../../../../../vendor/jms/serializer/src");
 
 class CartServiceTest extends \PHPUnit_Framework_TestCase
 {
