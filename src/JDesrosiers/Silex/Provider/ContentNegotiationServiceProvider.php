@@ -3,7 +3,7 @@
 namespace JDesrosiers\Silex\Provider;
 
 use JDesrosiers\Silex\JmsSerializerContentNegotiation;
-use JMS\Serializer\Serializer;
+use JDesrosiers\Silex\SymfonySerializerContentNegotiation;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,12 +48,16 @@ class ContentNegotiationServiceProvider implements ServiceProviderInterface
 
         // JMS Serializer
         $app["conneg.serializationContext"] = null;
-        $app["conneg.serializationContext"] = null;
+        $app["conneg.deserializationContext"] = null;
 
         $app["conneg"] = $app->share(
-            function () use ($app) {
-                if ($app->offsetExists("serializer") && $app["serializer"] instanceof Serializer) {
-                    return new JmsSerializerContentNegotiation($app);
+            function (Application $app) {
+                if ($app->offsetExists("serializer")) {
+                    if ($app["serializer"] instanceof \JMS\Serializer\Serializer) {
+                        return new JmsSerializerContentNegotiation($app);
+                    } elseif ($app["serializer"] instanceof \Symfony\Component\Serializer\Serializer) {
+                        return new SymfonySerializerContentNegotiation($app);
+                    }
                 }
 
                 throw new ServiceUnavailableHttpException(null, "No supported serializer found");
@@ -71,7 +75,7 @@ class ContentNegotiationServiceProvider implements ServiceProviderInterface
     public function setRequestFormat(Request $request)
     {
         // If there is no Accept header, do nothing
-        if (!$request->headers->has("Accept")) {
+        if (!$request->headers->get("Accept")) {
             return;
         }
 
@@ -84,6 +88,7 @@ class ContentNegotiationServiceProvider implements ServiceProviderInterface
 
             $format = $request->getFormat($contentType);
             if (in_array($format, $this->app["conneg.responseFormats"])) {
+                // An acceptable format was found.  Set it as the requestFormat where it can be referenced later.
                 $request->setRequestFormat($format);
                 return;
             }

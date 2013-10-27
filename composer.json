@@ -6,11 +6,14 @@
         "silex/silex": "~1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "3.7.*",
-        "symfony/browser-kit": "2.3.*"
+        "phpunit/phpunit": "~3.7.0",
+        "symfony/browser-kit": "~2.3.0",
+        "jdesrosiers/silex-jms-serializer-provider": "dev-master",
+        "symfony/serializer": "~2.3.0"
     },
     "suggest": {
-        "jms/serializer": "Use the conneg service to automatically serialize responses and deserialize requests using JMS Serializer"
+        "jdesrosiers/silex-jms-serializer-provider": "Use the conneg service to serialize responses and deserialize requests using JMS Serializer.",
+        "symfony/serializer": "Use the conneg service to serialize responses and deserialize requests using the Symfony Serializer Component."
     },
     "license": "MIT",
     "authors": [

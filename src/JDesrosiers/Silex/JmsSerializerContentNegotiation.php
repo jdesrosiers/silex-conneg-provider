@@ -31,11 +31,15 @@ class JmsSerializerContentNegotiation implements ContentNegotiation
      */
     public function createResponse($responseObject, $status = 200, array $headers = array())
     {
+        $format = $this->app["request"]->getRequestFormat($this->app["conneg.defaultFormat"]);
+
         $serializedContent = $this->app["serializer"]->serialize(
             $responseObject,
-            $this->app["request"]->getRequestFormat($this->app["conneg.defaultFormat"]),
+            $format,
             $this->app["conneg.serializationContext"]
         );
+
+        $headers["Conent-Type"] = $this->app['request']->getMimeType($format);
 
         return new Response($serializedContent, $status, $headers);
     }
