@@ -39,23 +39,30 @@ class ContentNegotiationServiceProvider implements ServiceProviderInterface
     {
         $this->app = $app;
 
-        // Content Negotiation
         $app["conneg.responseFormats"] = array("html");
         $app["conneg.requestFormats"] = array("form");
-
-        // General Serialization
         $app["conneg.defaultFormat"] = "html";
-
-        // JMS Serializer
-        $app["conneg.serializationContext"] = null;
-        $app["conneg.deserializationContext"] = null;
 
         $app["conneg"] = $app->share(
             function (Application $app) {
                 if ($app->offsetExists("serializer")) {
                     if ($app["serializer"] instanceof \JMS\Serializer\Serializer) {
+                        if (!$app->offsetExists("conneg.serializationContext")) {
+                            $app["conneg.serializationContext"] = null;
+                        }
+                        if (!$app->offsetExists("conneg.deserializationContext")) {
+                            $app["conneg.deserializationContext"] = null;
+                        }
+
                         return new JmsSerializerContentNegotiation($app);
                     } elseif ($app["serializer"] instanceof \Symfony\Component\Serializer\Serializer) {
+                        if (!$app->offsetExists("conneg.serializationContext")) {
+                            $app["conneg.serializationContext"] = array();
+                        }
+                        if (!$app->offsetExists("conneg.deserializationContext")) {
+                            $app["conneg.deserializationContext"] = array();
+                        }
+
                         return new SymfonySerializerContentNegotiation($app);
                     }
                 }

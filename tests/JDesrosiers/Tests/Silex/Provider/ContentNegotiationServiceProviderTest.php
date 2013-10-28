@@ -4,11 +4,13 @@ namespace JDesrosiers\Tests\Silex\Provider;
 
 use JDesrosiers\Silex\Provider\ContentNegotiationServiceProvider;
 use JDesrosiers\Silex\Provider\JmsSerializerServiceProvider;
+use JDesrosiers\Tests\Silex\Provider\Fixtures\Foo;
 use Silex\Application;
 use Silex\Provider\SerializerServiceProvider;
 use Symfony\Component\HttpKernel\Client;
 
 require_once __DIR__ . "/../../../../../vendor/autoload.php";
+require __DIR__ . "/Fixtures/Foo.php";
 
 class CartServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -23,10 +25,6 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
              "conneg.responseFormats" => array("json", "xml"),
              "conneg.requestFormats" => array("json", "xml"),
              "conneg.defaultFormat" => "json",
-        ));
-
-        $this->app->register(new JmsSerializerServiceProvider(), array(
-            "serializer.srcDir" => __DIR__ . "/../../../../../vendor/jms/serializer/src",
         ));
     }
 
@@ -135,7 +133,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedContentType, $response->headers->get("Content-Type"));
     }
 
-    public function dataProviderCreateResponse()
+    public function dataProviderJmsCreateResponse()
     {
         $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -153,10 +151,14 @@ XML;
     }
 
     /**
-     * @dataProvider dataProviderCreateResponse
+     * @dataProvider dataProviderJmsCreateResponse
      */
-    public function testCreateResponse($accept, $expectedContentType, $expectedContent)
+    public function testJmsCreateResponse($accept, $expectedContentType, $expectedContent)
     {
+        $this->app->register(new JmsSerializerServiceProvider(), array(
+            "serializer.srcDir" => __DIR__ . "/../../../../../vendor/jms/serializer/src",
+        ));
+
         $this->app->get("/foo", function (Application $app) {
             return $app["conneg"]->createResponse(array("foo" => "bar"));
         });
@@ -175,7 +177,7 @@ XML;
         $this->assertEquals($expectedContent, $response->getContent());
     }
 
-    public function dataProviderDeserializeRequest()
+    public function dataProviderJmsDeserializeRequest()
     {
         $xml = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -190,11 +192,13 @@ XML;
     }
 
     /**
-     * @dataProvider dataProviderDeserializeRequest
+     * @dataProvider dataProviderJmsDeserializeRequest
      */
-    public function testDeserializeRequest($contentType, $content)
+    public function testJmsDeserializeRequest($contentType, $content)
     {
-        $expectedContent = "foo";
+        $this->app->register(new JmsSerializerServiceProvider(), array(
+            "serializer.srcDir" => __DIR__ . "/../../../../../vendor/jms/serializer/src",
+        ));
 
         $this->app->post("/foo", function (Application $app) {
             return print_r($app["conneg"]->deserializeRequest("string"), true);
@@ -208,6 +212,93 @@ XML;
         $client->request("POST", "/foo", array(), array(), $headers, $content);
 
         $response = $client->getResponse();
+
+        $this->assertEquals("200", $response->getStatusCode());
+        $this->assertEquals("foo", $response->getContent());
+    }
+
+    public function dataProviderSymfonyCreateResponse()
+    {
+        $xml = <<<XML
+<?xml version="1.0"?>
+<response><foo>bar</foo></response>
+
+XML;
+
+        return array(
+            array("application/json", "application/json", '{"foo":"bar"}'),
+            array("text/xml", "text/xml; charset=UTF-8", $xml),
+            array("application/xml", "text/xml; charset=UTF-8", $xml),
+        );
+    }
+
+    /**
+     * @dataProvider dataProviderSymfonyCreateResponse
+     */
+    public function testSymfonyCreateResponse($accept, $expectedContentType, $expectedContent)
+    {
+        $this->app->register(new SerializerServiceProvider());
+
+        $this->app->get("/foo", function (Application $app) {
+            return $app["conneg"]->createResponse(array("foo" => "bar"));
+        });
+
+        $headers = array(
+            "HTTP_ACCEPT" => $accept,
+        );
+
+        $client = new Client($this->app, $headers);
+        $client->request("GET", "/foo");
+
+        $response = $client->getResponse();
+
+        $this->assertEquals("200", $response->getStatusCode());
+        $this->assertEquals($expectedContentType, $response->headers->get("Content-Type"));
+        $this->assertEquals($expectedContent, $response->getContent());
+    }
+
+    public function dataProviderSymfonyDeserializeRequest()
+    {
+        $xml = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<Foo><foo><![CDATA[bar]]></foo></Foo>
+XML;
+
+        return array(
+            array("application/json", '{"foo":"bar"}'),
+            array("text/xml; charset=UTF-8", $xml),
+            array("application/xml", $xml),
+        );
+    }
+
+    /**
+     * @dataProvider dataProviderSymfonyDeserializeRequest
+     */
+    public function testSymfonyDeserializeRequest($contentType, $content)
+    {
+        $this->app->register(new SerializerServiceProvider());
+
+        $expectedContent = <<<CONTENT
+JDesrosiers\Tests\Silex\Provider\Fixtures\Foo Object
+(
+    [foo:protected] => bar
+)
+
+CONTENT;
+
+        $this->app->post("/foo", function (Application $app) {
+            return print_r($app["conneg"]->deserializeRequest("JDesrosiers\Tests\Silex\Provider\Fixtures\Foo"), true);
+        });
+
+        $headers = array(
+            "CONTENT_TYPE" => $contentType,
+        );
+
+        $client = new Client($this->app, $headers);
+        $client->request("POST", "/foo", array(), array(), $headers, $content);
+
+        $response = $client->getResponse();
+        print_r((string) $response);
 
         $this->assertEquals("200", $response->getStatusCode());
         $this->assertEquals($expectedContent, $response->getContent());
