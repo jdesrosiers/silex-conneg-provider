@@ -117,7 +117,7 @@ class ContentNegotiationServiceProvider implements ServiceProviderInterface
         $request->setFormat("form", array("application/x-www-form-urlencoded", "multipart/form-data"));
 
         $format = $request->getContentType();
-        if ($format !== null && !in_array($format, $this->app["conneg.requestFormats"])) {
+        if (strlen($request->getContent()) > 0 && !in_array($format, $this->app["conneg.requestFormats"])) {
             // The request has a body but it is not a supported media type
             throw new UnsupportedMediaTypeHttpException();
         }

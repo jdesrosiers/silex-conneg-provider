@@ -125,7 +125,7 @@ class CartServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         $client = new Client($this->app, $headers);
-        $client->request("POST", "/foo", array(), array(), $headers, "");
+        $client->request("POST", "/foo", array(), array(), $headers, "testdata");
 
         $response = $client->getResponse();
 
