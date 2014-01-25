@@ -1,14 +1,14 @@
 <?php
 
-namespace JDesrosiers\Silex;
+namespace JDesrosiers\Silex\Provider\ContentNegotiation;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * This class provides helper methods for serializing responses and deserializing requests using Symfony Serializer.
+ * This class provides helper methods for serializing responses and deserializing requests using JMS Serializer.
  */
-class SymfonySerializerContentNegotiation implements ContentNegotiation
+class JmsSerializerContentNegotiation implements ContentNegotiation
 {
     protected $app;
 
@@ -32,9 +32,16 @@ class SymfonySerializerContentNegotiation implements ContentNegotiation
     public function createResponse($responseObject, $status = 200, array $headers = array())
     {
         $format = $this->app["request"]->getRequestFormat($this->app["conneg.defaultFormat"]);
+
+        $serializedContent = $this->app["serializer"]->serialize(
+            $responseObject,
+            $format,
+            $this->app["conneg.serializationContext"]
+        );
+
         $headers["Conent-Type"] = $this->app['request']->getMimeType($format);
 
-        return new Response($this->app['serializer']->serialize($responseObject, $format), $status, $headers);
+        return new Response($serializedContent, $status, $headers);
     }
 
     /**

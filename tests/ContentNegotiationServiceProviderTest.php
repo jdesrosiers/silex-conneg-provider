@@ -4,12 +4,11 @@ namespace JDesrosiers\Tests\Silex\Provider;
 
 use JDesrosiers\Silex\Provider\ContentNegotiationServiceProvider;
 use JDesrosiers\Silex\Provider\JmsSerializerServiceProvider;
-use JDesrosiers\Tests\Silex\Provider\Fixtures\Foo;
 use Silex\Application;
 use Silex\Provider\SerializerServiceProvider;
 use Symfony\Component\HttpKernel\Client;
 
-require_once __DIR__ . "/../../../../../vendor/autoload.php";
+require_once __DIR__ . "/../vendor/autoload.php";
 require __DIR__ . "/Fixtures/Foo.php";
 
 class CartServiceTest extends \PHPUnit_Framework_TestCase
@@ -156,7 +155,7 @@ XML;
     public function testJmsCreateResponse($accept, $expectedContentType, $expectedContent)
     {
         $this->app->register(new JmsSerializerServiceProvider(), array(
-            "serializer.srcDir" => __DIR__ . "/../../../../../vendor/jms/serializer/src",
+            "serializer.srcDir" => __DIR__ . "/../vendor/jms/serializer/src",
         ));
 
         $this->app->get("/foo", function (Application $app) {
@@ -197,7 +196,7 @@ XML;
     public function testJmsDeserializeRequest($contentType, $content)
     {
         $this->app->register(new JmsSerializerServiceProvider(), array(
-            "serializer.srcDir" => __DIR__ . "/../../../../../vendor/jms/serializer/src",
+            "serializer.srcDir" => __DIR__ . "/../vendor/jms/serializer/src",
         ));
 
         $this->app->post("/foo", function (Application $app) {
@@ -298,7 +297,6 @@ CONTENT;
         $client->request("POST", "/foo", array(), array(), $headers, $content);
 
         $response = $client->getResponse();
-        print_r((string) $response);
 
         $this->assertEquals("200", $response->getStatusCode());
         $this->assertEquals($expectedContent, $response->getContent());

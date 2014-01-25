@@ -24,8 +24,8 @@
     ],
     "minimum-stability": "stable",
     "autoload": {
-        "psr-0": {
-            "JDesrosiers": "src/"
+        "psr-4": {
+            "JDesrosiers\\Silex\\Provider\\": "src/"
         }
     }
 }

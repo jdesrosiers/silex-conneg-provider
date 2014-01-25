@@ -1,6 +1,6 @@
 <?php
 
-namespace JDesrosiers\Silex;
+namespace JDesrosiers\Silex\Provider\ContentNegotiation;
 
 /**
  * This interface defines helper methods for automatically serializing responses and deserializing requests.

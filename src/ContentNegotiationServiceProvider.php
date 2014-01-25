@@ -2,14 +2,16 @@
 
 namespace JDesrosiers\Silex\Provider;
 
-use JDesrosiers\Silex\JmsSerializerContentNegotiation;
-use JDesrosiers\Silex\SymfonySerializerContentNegotiation;
+use JDesrosiers\Silex\Provider\ContentNegotiation\JmsSerializerContentNegotiation;
+use JDesrosiers\Silex\Provider\ContentNegotiation\SymfonySerializerContentNegotiation;
+use JMS\Serializer as JMS;
 use Silex\Application;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotAcceptableHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
+use Symfony\Component\Serializer as SymfonySerializer;
 
 /**
  * This ServiceProvider provides HTTP Content Negotiation support to a silex application.
@@ -46,7 +48,7 @@ class ContentNegotiationServiceProvider implements ServiceProviderInterface
         $app["conneg"] = $app->share(
             function (Application $app) {
                 if ($app->offsetExists("serializer")) {
-                    if ($app["serializer"] instanceof \JMS\Serializer\Serializer) {
+                    if ($app["serializer"] instanceof JMS\Serializer) {
                         if (!$app->offsetExists("conneg.serializationContext")) {
                             $app["conneg.serializationContext"] = null;
                         }
@@ -55,7 +57,7 @@ class ContentNegotiationServiceProvider implements ServiceProviderInterface
                         }
 
                         return new JmsSerializerContentNegotiation($app);
-                    } elseif ($app["serializer"] instanceof \Symfony\Component\Serializer\Serializer) {
+                    } elseif ($app["serializer"] instanceof SymfonySerializer\Serializer) {
                         if (!$app->offsetExists("conneg.serializationContext")) {
                             $app["conneg.serializationContext"] = array();
                         }
