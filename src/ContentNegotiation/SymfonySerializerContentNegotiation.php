@@ -32,8 +32,6 @@ class SymfonySerializerContentNegotiation implements ContentNegotiation
     public function createResponse($responseObject, $status = 200, array $headers = array())
     {
         $format = $this->app["request"]->getRequestFormat($this->app["conneg.defaultFormat"]);
-        $headers["Conent-Type"] = $this->app['request']->getMimeType($format);
-
         return new Response($this->app['serializer']->serialize($responseObject, $format), $status, $headers);
     }
 

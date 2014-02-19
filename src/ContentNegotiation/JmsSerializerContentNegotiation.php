@@ -39,8 +39,6 @@ class JmsSerializerContentNegotiation implements ContentNegotiation
             $this->app["conneg.serializationContext"]
         );
 
-        $headers["Conent-Type"] = $this->app['request']->getMimeType($format);
-
         return new Response($serializedContent, $status, $headers);
     }
 
