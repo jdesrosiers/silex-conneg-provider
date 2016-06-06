@@ -3,13 +3,13 @@
     "description": "A silex service provider that provides tools for doing HTTP content negotiation.",
     "keywords": ["silex", "content negotiation", "conneg", "http", "service provider"],
     "require": {
-        "silex/silex": "~1.0"
+        "silex/silex": "~2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~3.7.0",
-        "symfony/browser-kit": "~2.3.0",
-        "jdesrosiers/silex-jms-serializer-provider": "dev-master",
-        "symfony/serializer": "~2.3.0"
+        "phpunit/phpunit": "~3.7",
+        "symfony/browser-kit": "~2.3",
+        "jdesrosiers/silex-jms-serializer-provider": "~1.0",
+        "symfony/serializer": "~2.3"
     },
     "suggest": {
         "jdesrosiers/silex-jms-serializer-provider": "Use the conneg service to serialize responses and deserialize requests using JMS Serializer.",
@@ -22,7 +22,6 @@
             "email": "jdesrosi@gmail.com"
         }
     ],
-    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "JDesrosiers\\Silex\\Provider\\": "src/"

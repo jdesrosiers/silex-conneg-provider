@@ -1,10 +1,9 @@
 silex-conneg-provider
 =====================
 
-[![Gittip](http://img.shields.io/gittip/jdesrosiers.svg)](https://www.gittip.com/jdesrosiers/)
 [![Build Status](https://travis-ci.org/jdesrosiers/silex-conneg-provider.png?branch=master)](https://travis-ci.org/jdesrosiers/silex-conneg-provider)
-[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/badges/quality-score.png?s=3b40bf693eeed775332adc6dce0a0d5d6d22562b)](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/)
-[![Code Coverage](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/badges/coverage.png?s=236af0823e81210b6d6f75ccb2952df1a45f7fa4)](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/jdesrosiers/silex-conneg-provider/?branch=master)
 
 The silex-conneg-provider is a [silex](https://github.com/fabpot/Silex) service provider that provides tools for doing
 [HTTP Content Negotiation](http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html) in your application.  It allows you
@@ -23,7 +22,7 @@ Install the silex-conneg-provider using [composer](http://getcomposer.org/).  Th
 ```json
 {
     "require": {
-        "jdesrosiers/silex-conneg-provider": "~0.1"
+        "jdesrosiers/silex-conneg-provider": "~1.0"
     }
 }
 ```

@@ -31,7 +31,8 @@ class JmsSerializerContentNegotiation implements ContentNegotiation
      */
     public function createResponse($responseObject, $status = 200, array $headers = array())
     {
-        $format = $this->app["request"]->getRequestFormat($this->app["conneg.defaultFormat"]);
+        $request = $this->app["request_stack"]->getCurrentRequest();
+        $format = $request->getRequestFormat($this->app["conneg.defaultFormat"]);
 
         $serializedContent = $this->app["serializer"]->serialize(
             $responseObject,
@@ -50,10 +51,12 @@ class JmsSerializerContentNegotiation implements ContentNegotiation
      */
     public function deserializeRequest($className)
     {
+        $request = $this->app["request_stack"]->getCurrentRequest();
+
         return $this->app["serializer"]->deserialize(
-            $this->app["request"]->getContent(),
+            $request->getContent(),
             $className,
-            $this->app["request"]->getContentType(),
+            $request->getContentType(),
             $this->app["conneg.deserializationContext"]
         );
     }
