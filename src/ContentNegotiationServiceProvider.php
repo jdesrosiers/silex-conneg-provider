@@ -90,6 +90,7 @@ class ContentNegotiationServiceProvider implements ServiceProviderInterface, Boo
         foreach ($request->getAcceptableContentTypes() as $contentType) {
             // If any format is acceptable, do nothing
             if ($contentType === "*/*") {
+				$request->setRequestFormat($app["conneg.defaultFormat"]);
                 return;
             }
 
